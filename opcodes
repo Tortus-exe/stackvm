@@ -2,11 +2,23 @@
 00: NOP
 01: vtaskdelay i32
 02: PUSH i32
-03: POP i32
-04: PUSH f32
-05: POP f32
-06: ADD INDEXED i16 i16
-07: SUB INDEXED i16 i16
-08: MUL INDEXED i16 i16
-09: DIV INDEXED i16 i16
-0a: PRINT INDEXED i16
+03: PUSH i16
+04: PRINT
+05: POP
+06: FTOI
+07: ITOF
+08: IADD
+09: ISUB
+0a: IMUL
+0b: IDIV
+0c: FADD
+0d: FSUB
+0e: FMUL
+0f: FDIV
+
+float/int layout:
+float:
+if bit 30 is 0, the number is float
+
+int:
+if bit 30 is 1, the number is int
