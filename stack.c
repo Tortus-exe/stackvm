@@ -13,7 +13,7 @@ void vtaskdelay() {}
 void print() {
 	printf("%lf\n", ((float*)stack)[sp--]);
 }
-void pop() {}
+void pop() {sp--;}
 void ftoi() {
 	stack[sp] = (uint32_t)*(float*)&stack[sp];
 }
