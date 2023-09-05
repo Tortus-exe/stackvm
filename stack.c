@@ -3,40 +3,28 @@
 #include <stdint.h>
 
 #define STACK_SIZE 4096
+#define NUMLOCALS 256
 
 uint32_t pc;
 uint32_t* stack;
+uint32_t* locals;
 uint16_t sp;
 char* prg;
 
 void nop() {}
 void vtaskdelay() {}
-void iprint() {
-	printf("0x%x\n", stack[sp--]);
-}
-void fprint() {
-	printf("%lf\n", ((float*)stack)[sp--]);
-}
+void iprint() { printf("0x%x\n", stack[sp--]); }
+void fprint() { printf("%lf\n", ((float*)stack)[sp--]); }
 void pop() {sp--;}
-void ftoi() {
-	stack[sp] = (uint32_t)*(float*)&stack[sp];
-}
+void ftoi() { stack[sp] = (uint32_t)*(float*)&stack[sp]; }
 void itof() {
 	float x = (float) stack[sp];
 	stack[sp] = *(uint32_t*)&x;
 }
-void iadd() {
-	stack[sp] = stack[sp--] + stack[sp];
-}
-void isub() {
-	stack[sp] = stack[sp-1] - stack[sp--];
-}
-void imul() {
-	stack[sp] = stack[sp--] * stack[sp];
-}
-void idiv() {
-	stack[sp] = stack[sp-1] / stack[sp--];
-}
+void iadd() { stack[sp] = stack[sp--] + stack[sp]; }
+void isub() { stack[sp] = stack[sp-1] - stack[sp--]; }
+void imul() { stack[sp] = stack[sp--] * stack[sp]; }
+void idiv() { stack[sp] = stack[sp-1] / stack[sp--]; }
 void fadd() {
 	float res = (((float*)stack)[sp--] + ((float*)stack)[sp]);
 	stack[sp] = *(uint32_t*)&res;
@@ -110,33 +98,28 @@ void bne() {
 	pc += 2;
 }
 void jmp() { pc += *(int16_t*)(prg + pc) + 2; }
-void dup() {
-	stack[++sp] = stack[sp];
-}
+void dup() { stack[++sp] = stack[sp]; }
 
-void andb() {
-	stack[sp] = stack[sp--] & stack[sp];
-}
-void orb() {
-	stack[sp] = stack[sp--] | stack[sp];
-}
-void xorb() {
-	stack[sp] = stack[sp--] ^ stack[sp];
-}
-void notb() {
-	stack[sp] = ~stack[sp];
-}
+void andb() { stack[sp] = stack[sp--] & stack[sp]; }
+void orb() { stack[sp] = stack[sp--] | stack[sp]; }
+void xorb() { stack[sp] = stack[sp--] ^ stack[sp]; }
+void notb() { stack[sp] = ~stack[sp]; }
+
+void store() { locals[*(unsigned char*)(prg+(pc++))] = stack[sp--]; }
+void load() { stack[++sp] = locals[*(unsigned char*)(prg+(pc++))]; }
 
 typedef void(*stdop)(void);
 stdop ops[] = {
 	nop, vtaskdelay, pushi32, pushi16, iprint, fprint, ftoi, itof,
 	iadd, isub, imul, idiv, fadd, fsub, fmul, fdiv,
-	pop, swap, beq, bgt, blt, bge, ble, bne, jmp, dup, andb, orb, xorb, notb
+	pop, swap, beq, bgt, blt, bge, ble, bne, jmp, dup, andb, orb, xorb, notb,
+	store, load
 };
 
 void run(long len) {
 	pc = 0;
 	stack = malloc(STACK_SIZE * sizeof(uint32_t));
+	locals = malloc(NUMLOCALS * sizeof(uint32_t));
 	sp = -1;
 	while(pc < len) {
 		ops[prg[pc++]]();

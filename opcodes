@@ -29,8 +29,8 @@
 1b: OR
 1c: XOR
 1d: NOT
-1e:
-1f:
+1e: STORE
+1f: LOAD
 
 float/int layout:
 float:
