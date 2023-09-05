@@ -64,38 +64,44 @@ void swap() {
 void beq(int16_t offset) {
 	if(stack[sp] == stack[sp-1]) {
 		sp -= 2;
-		pc += offset + 2; // add 2 for the 2 bytes for args
+		pc += offset; // add 2 for the 2 bytes for args
 	}
+	pc += 2;
 }
 void bgt(int16_t offset) {
 	if(stack[sp] > stack[sp-1]) {
 		sp -= 2;
-		pc += offset + 2;
+		pc += offset;
 	}
+	pc += 2;
 }
 void blt(int16_t offset) {
 	if(stack[sp] < stack[sp-1]) {
 		sp -= 2;
-		pc += offset + 2;
+		pc += offset;
 	}
+	pc += 2;
 }
 void bge(int16_t offset) {
 	if(stack[sp] >= stack[sp-1]) {
 		sp -= 2;
-		pc += offset + 2;
+		pc += offset;
 	}
+	pc += 2;
 }
 void ble(int16_t offset) {
 	if(stack[sp] <= stack[sp-1]) {
 		sp -= 2;
-		pc += offset + 2;
+		pc += offset;
 	}
+	pc += 2;
 }
 void bne(int16_t offset) {
 	if(stack[sp] != stack[sp-1]) {
 		sp -= 2;
-		pc += offset + 2;
+		pc += offset;
 	}
+	pc += 2;
 }
 void jmp(int16_t offset) { pc += offset + 2; }
 void dup() {

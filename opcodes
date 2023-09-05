@@ -38,3 +38,6 @@ if bit 30 is 0, the number is float
 
 int:
 if bit 30 is 1, the number is int
+
+TODO: 
+[ ] make general memory for local variables
