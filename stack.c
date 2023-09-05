@@ -7,6 +7,7 @@
 uint32_t pc;
 uint32_t* stack;
 uint16_t sp;
+char* prg;
 
 void nop() {}
 void vtaskdelay() {}
@@ -52,8 +53,13 @@ void fdiv() {
 	float res = (((float*)stack)[sp-1] / ((float*)stack)[sp--]);
 	stack[sp] = *(uint32_t*)&res;
 }
-void pushi(uint32_t val) {
-	stack[++sp] = val;
+void pushi32() {
+	stack[++sp] = *(uint32_t*)(prg + pc);
+	pc += 4;
+}
+void pushi16() {
+	stack[++sp] = (uint32_t)(*(uint16_t*)(prg + pc));
+	pc += 2;
 }
 void swap() {
 	uint32_t k = stack[sp];
@@ -61,49 +67,49 @@ void swap() {
 	stack[sp-1] = k;
 }
 
-void beq(int16_t offset) {
+void beq() {
 	if(stack[sp] == stack[sp-1]) {
 		sp -= 2;
-		pc += offset; // add 2 for the 2 bytes for args
+		pc += *(int16_t*)(prg + pc); // add 2 for the 2 bytes for args
 	}
 	pc += 2;
 }
-void bgt(int16_t offset) {
+void bgt() {
 	if(stack[sp] > stack[sp-1]) {
 		sp -= 2;
-		pc += offset;
+		pc += *(int16_t*)(prg + pc);
 	}
 	pc += 2;
 }
-void blt(int16_t offset) {
+void blt() {
 	if(stack[sp] < stack[sp-1]) {
 		sp -= 2;
-		pc += offset;
+		pc += *(int16_t*)(prg + pc);
 	}
 	pc += 2;
 }
-void bge(int16_t offset) {
+void bge() {
 	if(stack[sp] >= stack[sp-1]) {
 		sp -= 2;
-		pc += offset;
+		pc += *(int16_t*)(prg + pc);
 	}
 	pc += 2;
 }
-void ble(int16_t offset) {
+void ble() {
 	if(stack[sp] <= stack[sp-1]) {
 		sp -= 2;
-		pc += offset;
+		pc += *(int16_t*)(prg + pc);
 	}
 	pc += 2;
 }
-void bne(int16_t offset) {
+void bne() {
 	if(stack[sp] != stack[sp-1]) {
 		sp -= 2;
-		pc += offset;
+		pc += *(int16_t*)(prg + pc);
 	}
 	pc += 2;
 }
-void jmp(int16_t offset) { pc += offset + 2; }
+void jmp() { pc += *(int16_t*)(prg + pc) + 2; }
 void dup() {
 	stack[++sp] = stack[sp];
 }
@@ -123,53 +129,17 @@ void notb() {
 
 typedef void(*stdop)(void);
 stdop ops[] = {
-	nop, vtaskdelay, nop, nop, iprint, fprint, ftoi, itof,
+	nop, vtaskdelay, pushi32, pushi16, iprint, fprint, ftoi, itof,
 	iadd, isub, imul, idiv, fadd, fsub, fmul, fdiv,
-	pop, swap, nop, nop, nop, nop, nop, nop, nop, dup, andb, orb, xorb, notb
+	pop, swap, beq, bgt, blt, bge, ble, bne, jmp, dup, andb, orb, xorb, notb
 };
 
-void run(char* prg, long len) {
+void run(long len) {
 	pc = 0;
 	stack = malloc(STACK_SIZE * sizeof(uint32_t));
 	sp = -1;
 	while(pc < len) {
-		unsigned char x = prg[pc++];
-		switch(x) {
-			case 0x02: 
-				pushi(*(uint32_t*)(prg + pc));
-				pc += 4;
-				break;
-			case 0x03:
-				pushi((uint32_t)(*(uint16_t*)(prg + pc)));
-				pc += 2;
-				break;
-			// now for all the branches
-			case 0x12:
-				beq(*(int16_t*)(prg + pc));
-				break;
-			case 0x13:
-				bgt(*(int16_t*)(prg + pc));
-				break;
-			case 0x14:
-				blt(*(int16_t*)(prg + pc));
-				break;
-			case 0x15:
-				bge(*(int16_t*)(prg + pc));
-				break;
-			case 0x16:
-				ble(*(int16_t*)(prg + pc));
-				break;
-			case 0x17:
-				bne(*(int16_t*)(prg + pc));
-				break;
-			case 0x18:
-				jmp(*(int16_t*)(prg + pc));
-				break;
-
-			default:
-				ops[x]();
-				break;
-		}
+		ops[prg[pc++]]();
 	}
 }
 
@@ -189,6 +159,7 @@ int main(int argc, char* argv[]) {
 	char* buffer = (char*) malloc(filelen * sizeof(char));
 	fread(buffer, filelen, 1, inputfile);
 	fclose(inputfile);
-	run(buffer, filelen);
+	prg = buffer;
+	run(filelen);
 	return 0;
 }
