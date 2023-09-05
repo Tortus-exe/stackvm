@@ -61,11 +61,49 @@ void swap() {
 	stack[sp-1] = k;
 }
 
+void beq(int16_t offset) {
+	if(stack[sp] == stack[sp-1]) {
+		sp -= 2;
+		pc += offset + 2; // add 2 for the 2 bytes for args
+	}
+}
+void bgt(int16_t offset) {
+	if(stack[sp] > stack[sp-1]) {
+		sp -= 2;
+		pc += offset + 2;
+	}
+}
+void blt(int16_t offset) {
+	if(stack[sp] < stack[sp-1]) {
+		sp -= 2;
+		pc += offset + 2;
+	}
+}
+void bge(int16_t offset) {
+	if(stack[sp] >= stack[sp-1]) {
+		sp -= 2;
+		pc += offset + 2;
+	}
+}
+void ble(int16_t offset) {
+	if(stack[sp] <= stack[sp-1]) {
+		sp -= 2;
+		pc += offset + 2;
+	}
+}
+void bne(int16_t offset) {
+	if(stack[sp] != stack[sp-1]) {
+		sp -= 2;
+		pc += offset + 2;
+	}
+}
+void jmp(int16_t offset) { pc += offset + 2; }
+
 typedef void(*stdop)(void);
 stdop ops[] = {
 	nop, vtaskdelay, nop, nop, iprint, fprint, ftoi, itof,
 	iadd, isub, imul, idiv, fadd, fsub, fmul, fdiv,
-	pop, swap
+	pop, swap, nop, nop, nop, nop, nop, nop
 };
 
 void run(char* prg, long len) {
@@ -83,6 +121,29 @@ void run(char* prg, long len) {
 				pushi((uint32_t)(*(uint16_t*)(prg + pc)));
 				pc += 2;
 				break;
+			// now for all the branches
+			case 0x12:
+				beq(*(int16_t*)(prg + pc));
+				break;
+			case 0x13:
+				bgt(*(int16_t*)(prg + pc));
+				break;
+			case 0x14:
+				blt(*(int16_t*)(prg + pc));
+				break;
+			case 0x15:
+				bge(*(int16_t*)(prg + pc));
+				break;
+			case 0x16:
+				ble(*(int16_t*)(prg + pc));
+				break;
+			case 0x17:
+				bne(*(int16_t*)(prg + pc));
+				break;
+			case 0x18:
+				jmp(*(int16_t*)(prg + pc));
+				break;
+
 			default:
 				ops[x]();
 				break;
