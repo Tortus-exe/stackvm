@@ -98,12 +98,28 @@ void bne(int16_t offset) {
 	}
 }
 void jmp(int16_t offset) { pc += offset + 2; }
+void dup() {
+	stack[++sp] = stack[sp];
+}
+
+void andb() {
+	stack[sp] = stack[sp--] & stack[sp];
+}
+void orb() {
+	stack[sp] = stack[sp--] | stack[sp];
+}
+void xorb() {
+	stack[sp] = stack[sp--] ^ stack[sp];
+}
+void notb() {
+	stack[sp] = ~stack[sp];
+}
 
 typedef void(*stdop)(void);
 stdop ops[] = {
 	nop, vtaskdelay, nop, nop, iprint, fprint, ftoi, itof,
 	iadd, isub, imul, idiv, fadd, fsub, fmul, fdiv,
-	pop, swap, nop, nop, nop, nop, nop, nop
+	pop, swap, nop, nop, nop, nop, nop, nop, nop, dup, andb, orb, xorb, notb
 };
 
 void run(char* prg, long len) {

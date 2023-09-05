@@ -24,11 +24,11 @@
 16: BLE
 17: BNE
 18: JMP
-19:
-1a:
-1b:
-1c:
-1d:
+19: DUP
+1a: AND
+1b: OR
+1c: XOR
+1d: NOT
 1e:
 1f:
 
