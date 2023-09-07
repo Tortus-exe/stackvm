@@ -35,6 +35,7 @@
 21: WRITEPC
 22: PUSHSP
 23: WRITESP
+24: JSR
 
 float/int layout:
 float:
