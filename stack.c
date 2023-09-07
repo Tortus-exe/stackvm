@@ -107,13 +107,18 @@ void writepc() { pc = stack[sp--]; }
 void pushsp() { stack[++sp] = sp; }
 void writesp() { sp = stack[sp--]; }
 void jsr() { pushpc(); stack[sp]+=2; jmp(); }
+void jsrs() { 
+	uint32_t newpc = stack[sp--];
+	pushpc();
+	pc = newpc;
+}
 
 typedef void(*stdop)(void);
 stdop ops[] = {
 	nop, vtaskdelay, pushi32, pushi16, iprint, fprint, ftoi, itof,
 	iadd, isub, imul, idiv, fadd, fsub, fmul, fdiv,
 	pop, swap, beq, bgt, blt, bge, ble, bne, jmp, dup, andb, orb, xorb, notb,
-	store, load, pushpc, writepc, pushsp, writesp, jsr
+	store, load, pushpc, writepc, pushsp, writesp, jsr, jsrs
 };
 
 void run(long len) {
