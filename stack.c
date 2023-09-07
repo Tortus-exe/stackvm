@@ -13,8 +13,8 @@ char* prg;
 
 void nop() {}
 void vtaskdelay() {}
-void iprint() { printf("0x%x\n", stack[sp--]); }
-void fprint() { printf("%lf\n", ((float*)stack)[sp--]); }
+void iprint() { printf("0x%x\n", stack[sp]); }
+void fprint() { printf("%lf\n", ((float*)stack)[sp]); }
 void pop() {sp--;}
 void ftoi() { stack[sp] = (uint32_t)*(float*)&stack[sp]; }
 void itof() {
@@ -56,43 +56,37 @@ void swap() {
 }
 
 void beq() {
-	if(stack[sp] == stack[sp-1]) {
-		sp -= 2;
+	if(stack[sp] == stack[--sp]) {
 		pc += *(int16_t*)(prg + pc); // add 2 for the 2 bytes for args
 	}
 	pc += 2;
 }
 void bgt() {
-	if(stack[sp] > stack[sp-1]) {
-		sp -= 2;
+	if(stack[sp] > stack[--sp]) {
 		pc += *(int16_t*)(prg + pc);
 	}
 	pc += 2;
 }
 void blt() {
-	if(stack[sp] < stack[sp-1]) {
-		sp -= 2;
+	if(stack[sp] < stack[--sp]) {
 		pc += *(int16_t*)(prg + pc);
 	}
 	pc += 2;
 }
 void bge() {
-	if(stack[sp] >= stack[sp-1]) {
-		sp -= 2;
+	if(stack[sp] >= stack[--sp]) {
 		pc += *(int16_t*)(prg + pc);
 	}
 	pc += 2;
 }
 void ble() {
-	if(stack[sp] <= stack[sp-1]) {
-		sp -= 2;
+	if(stack[sp] <= stack[--sp]) {
 		pc += *(int16_t*)(prg + pc);
 	}
 	pc += 2;
 }
 void bne() {
-	if(stack[sp] != stack[sp-1]) {
-		sp -= 2;
+	if(stack[sp] != stack[--sp]) {
 		pc += *(int16_t*)(prg + pc);
 	}
 	pc += 2;
