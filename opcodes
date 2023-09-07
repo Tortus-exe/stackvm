@@ -38,6 +38,8 @@
 24: JSR
 25: JSRS
 
+FF: HALT
+
 float/int layout:
 float:
 if bit 30 is 0, the number is float
