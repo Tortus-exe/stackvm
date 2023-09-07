@@ -37,6 +37,7 @@
 23: WRITESP
 24: JSR
 25: JSRS
+26: PUSHA (load address at const array)
 
 FF: HALT
 

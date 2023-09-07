@@ -114,13 +114,14 @@ void jsrs() {
 	pushpc();
 	pc = newpc;
 }
+void pusha() { stack[sp] = prg[stack[sp]]; }
 
 typedef void(*stdop)(void);
 stdop ops[] = {
 	nop, vtaskdelay, pushi32, pushi16, iprint, fprint, ftoi, itof,
 	iadd, isub, imul, idiv, fadd, fsub, fmul, fdiv,
 	pop, swap, beq, bgt, blt, bge, ble, bne, jmp, dup, andb, orb, xorb, notb,
-	store, load, pushpc, writepc, pushsp, writesp, jsr, jsrs
+	store, load, pushpc, writepc, pushsp, writesp, jsr, jsrs, pusha
 };
 
 void run(long len) {
