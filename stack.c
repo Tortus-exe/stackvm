@@ -102,12 +102,17 @@ void notb() { stack[sp] = ~stack[sp]; }
 void store() { locals[*(unsigned char*)(prg+(pc++))] = stack[sp--]; }
 void load() { stack[++sp] = locals[*(unsigned char*)(prg+(pc++))]; }
 
+void pushpc() { stack[++sp] = pc; }
+void writepc() { pc = stack[sp--]; }
+void pushsp() { stack[++sp] = sp; }
+void writesp() { sp = stack[sp--]; }
+
 typedef void(*stdop)(void);
 stdop ops[] = {
 	nop, vtaskdelay, pushi32, pushi16, iprint, fprint, ftoi, itof,
 	iadd, isub, imul, idiv, fadd, fsub, fmul, fdiv,
 	pop, swap, beq, bgt, blt, bge, ble, bne, jmp, dup, andb, orb, xorb, notb,
-	store, load
+	store, load, pushpc, writepc, pushsp, writesp
 };
 
 void run(long len) {

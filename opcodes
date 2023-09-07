@@ -31,6 +31,10 @@
 1d: NOT
 1e: STORE
 1f: LOAD
+20: PUSHPC
+21: WRITEPC
+22: PUSHSP
+23: WRITESP
 
 float/int layout:
 float:
