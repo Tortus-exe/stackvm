@@ -41,6 +41,8 @@
 27: PUSHA (load address at const array as half-word)
 28: PUSHAW (load address at const array as word)
 29: SPRINT (print array reference as string)
+2a: LSL
+2b: LSR
 
 FF: HALT
 
