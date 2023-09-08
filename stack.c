@@ -117,13 +117,15 @@ void jsrs() {
 void pushab() { stack[sp] = prg[stack[sp]]; }
 void pusha() { stack[sp] = *(uint16_t*)(prg+stack[sp]); }
 void pushaw() { stack[sp] = *(uint32_t*)(prg+stack[sp]); }
+void sprint() { printf("%s\n", (char*) prg+stack[sp]); }
 
 typedef void(*stdop)(void);
 stdop ops[] = {
 	nop, vtaskdelay, pushi32, pushi16, iprint, fprint, ftoi, itof,
 	iadd, isub, imul, idiv, fadd, fsub, fmul, fdiv,
 	pop, swap, beq, bgt, blt, bge, ble, bne, jmp, dup, andb, orb, xorb, notb,
-	store, load, pushpc, writepc, pushsp, writesp, jsr, jsrs, pushab, pusha, pushaw
+	store, load, pushpc, writepc, pushsp, writesp, jsr, jsrs, pushab, pusha, pushaw,
+	sprint
 };
 
 void run(long len) {
