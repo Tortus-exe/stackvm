@@ -1,5 +1,5 @@
 default:
-	gcc stack.c -g -o stack
+	gcc stack.c -m32 -g -o stack
 
 clean:
 	rm stack

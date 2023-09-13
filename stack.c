@@ -135,6 +135,31 @@ void c4() { stack[++sp] = 4; }
 void c5() { stack[++sp] = 5; }
 void c6() { stack[++sp] = 6; }
 void c7() { stack[++sp] = 7; }
+void malloca() { 
+	void* k = malloc(stack[sp]);
+	stack[sp] = (uint32_t)k; 
+	// ((uint32_t*)k)[0] = 0;
+	// ((uint32_t*)stack[sp])[0] = 0;
+	// for(int i=0;i<10;++i) {
+	// 	((uint32_t*)stack[sp])[i] = 30-i;
+	// }
+}
+void freea() { free((uint32_t*)stack[sp--]); }
+void indexab() { stack[sp] = *((unsigned char*)(stack[sp]+stack[sp-1])); }
+void indexa() { stack[sp] = *((uint16_t*)(stack[sp]+stack[sp-1])); }
+void indexaw() { stack[sp] = *((uint32_t*)(stack[sp]+stack[sp-1])); }
+void storea() { (*(uint32_t*)(stack[sp-2]+stack[sp-1])) = stack[sp]; sp--; }
+
+void store0() { locals[0] = stack[sp--]; }
+void store1() { locals[1] = stack[sp--]; }
+void store2() { locals[2] = stack[sp--]; }
+void store3() { locals[3] = stack[sp--]; }
+void store4() { locals[4] = stack[sp--]; }
+void load0() { stack[++sp] = locals[0]; }
+void load1() { stack[++sp] = locals[1]; }
+void load2() { stack[++sp] = locals[2]; }
+void load3() { stack[++sp] = locals[3]; }
+void load4() { stack[++sp] = locals[4]; }
 
 typedef void(*stdop)(void);
 stdop ops[] = {
@@ -143,7 +168,8 @@ stdop ops[] = {
 	pop, swap, beq, bgt, blt, bge, ble, bne, jmp, dup, andb, orb, xorb, notb,
 	store, load, pushpc, writepc, pushsp, writesp, jsr, jsrs, pushab, pusha, pushaw,
 	sprint, lsl, lsr, mod, pushi8, neg, negf, 
-	c0, c1, c2, c3, c4, c5, c6, c7
+	c0, c1, c2, c3, c4, c5, c6, c7, malloca, freea, indexab, indexa, indexaw, storea,
+	store0, store1, store2, store3, store4, load0, load1, load2, load3, load4
 };
 
 void run(long len) {
