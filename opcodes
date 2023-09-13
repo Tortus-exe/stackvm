@@ -43,6 +43,7 @@
 29: SPRINT (print array reference as string)
 2a: LSL
 2b: LSR
+2c: MOD
 
 FF: HALT
 

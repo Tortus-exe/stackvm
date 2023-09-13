@@ -120,6 +120,7 @@ void pushaw() { stack[sp] = *(uint32_t*)(prg+stack[sp]); }
 void sprint() { printf("%s\n", (char*) prg+stack[sp]); }
 void lsl() { stack[sp] = stack[sp-1] << stack[sp--]; }
 void lsr() { stack[sp] = stack[sp-1] >> stack[sp--]; }
+void mod() { stack[sp] = stack[sp-1] % stack[sp--]; }
 
 typedef void(*stdop)(void);
 stdop ops[] = {
@@ -127,7 +128,7 @@ stdop ops[] = {
 	iadd, isub, imul, idiv, fadd, fsub, fmul, fdiv,
 	pop, swap, beq, bgt, blt, bge, ble, bne, jmp, dup, andb, orb, xorb, notb,
 	store, load, pushpc, writepc, pushsp, writesp, jsr, jsrs, pushab, pusha, pushaw,
-	sprint, lsl, lsr
+	sprint, lsl, lsr, mod
 };
 
 void run(long len) {
