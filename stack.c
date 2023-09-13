@@ -127,6 +127,14 @@ void pushi8() {
 }
 void negf() { stack[sp] = stack[sp] ^ 0x80000000; }
 void neg() { stack[sp] = -stack[sp]; }
+void c0() { stack[++sp] = 0; }
+void c1() { stack[++sp] = 1; }
+void c2() { stack[++sp] = 2; }
+void c3() { stack[++sp] = 3; }
+void c4() { stack[++sp] = 4; }
+void c5() { stack[++sp] = 5; }
+void c6() { stack[++sp] = 6; }
+void c7() { stack[++sp] = 7; }
 
 typedef void(*stdop)(void);
 stdop ops[] = {
@@ -134,7 +142,8 @@ stdop ops[] = {
 	iadd, isub, imul, idiv, fadd, fsub, fmul, fdiv,
 	pop, swap, beq, bgt, blt, bge, ble, bne, jmp, dup, andb, orb, xorb, notb,
 	store, load, pushpc, writepc, pushsp, writesp, jsr, jsrs, pushab, pusha, pushaw,
-	sprint, lsl, lsr, mod, pushi8, neg, negf
+	sprint, lsl, lsr, mod, pushi8, neg, negf, 
+	c0, c1, c2, c3, c4, c5, c6, c7
 };
 
 void run(long len) {
