@@ -44,6 +44,9 @@
 2a: LSL
 2b: LSR
 2c: MOD
+2d: PUSH i8
+2e: NEG
+2f: NEGF
 
 FF: HALT
 

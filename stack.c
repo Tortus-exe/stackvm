@@ -121,6 +121,12 @@ void sprint() { printf("%s\n", (char*) prg+stack[sp]); }
 void lsl() { stack[sp] = stack[sp-1] << stack[sp--]; }
 void lsr() { stack[sp] = stack[sp-1] >> stack[sp--]; }
 void mod() { stack[sp] = stack[sp-1] % stack[sp--]; }
+void pushi8() { 
+	stack[++sp] = (uint32_t)(*(uint8_t*)(prg + pc));
+	pc += 1;
+}
+void negf() { stack[sp] = stack[sp] ^ 0x80000000; }
+void neg() { stack[sp] = -stack[sp]; }
 
 typedef void(*stdop)(void);
 stdop ops[] = {
@@ -128,7 +134,7 @@ stdop ops[] = {
 	iadd, isub, imul, idiv, fadd, fsub, fmul, fdiv,
 	pop, swap, beq, bgt, blt, bge, ble, bne, jmp, dup, andb, orb, xorb, notb,
 	store, load, pushpc, writepc, pushsp, writesp, jsr, jsrs, pushab, pusha, pushaw,
-	sprint, lsl, lsr, mod
+	sprint, lsl, lsr, mod, pushi8, neg, negf
 };
 
 void run(long len) {
