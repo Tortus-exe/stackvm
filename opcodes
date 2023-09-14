@@ -1,6 +1,6 @@
 8-bit opcodes
 00: NOP
-01: vtaskdelay i32
+01: SLEEP
 02: PUSH i32
 03: PUSH i16
 04: PRINT i32

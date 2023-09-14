@@ -13,3 +13,16 @@ test: default
 			echo == TEST FAILED: $$i ==;\
 		fi;\
 	done
+
+ddt:
+	gcc stack_ddt.c -m32 -g -o stack
+
+testddt: ddt
+	for i in `ls tests`;\
+		do a=`./stack tests/$$i`;\
+		if [[ $$a == `cat expect/$$i` ]]; then\
+			echo TEST PASSED: $$i;\
+		else\
+			echo == TEST FAILED: $$i ==;\
+		fi;\
+	done

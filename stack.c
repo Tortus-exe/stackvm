@@ -14,7 +14,7 @@ uint16_t sp;
 unsigned char* prg;
 
 void nop() {}
-void vtaskdelay() {}
+void sleep() {}
 void iprint() { printf("0x%x\n", stack[sp]); }
 void fprint() { printf("%lf\n", ((float*)stack)[sp]); }
 void pop() {sp--;}
@@ -163,7 +163,7 @@ void load4() { stack[++sp] = locals[4]; }
 
 typedef void(*stdop)(void);
 stdop ops[] = {
-	nop, vtaskdelay, pushi32, pushi16, iprint, fprint, ftoi, itof,
+	nop, sleep, pushi32, pushi16, iprint, fprint, ftoi, itof,
 	iadd, isub, imul, idiv, fadd, fsub, fmul, fdiv,
 	pop, swap, beq, bgt, blt, bge, ble, bne, jmp, dup, andb, orb, xorb, notb,
 	store, load, pushpc, writepc, pushsp, writesp, jsr, jsrs, pushab, pusha, pushaw,
