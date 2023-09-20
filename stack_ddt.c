@@ -1,7 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
-#include <assert.h>
+#include <sys/stat.h>
+#include <sys/mman.h>
 
 #define STACK_SIZE 4096
 #define NUMLOCALS 256
@@ -310,14 +311,21 @@ int main(int argc, char* argv[]) {
 		printf("No such file %s!\n", argv[1]);
 		exit(1);
 	}
-	fseek(inputfile, 0, SEEK_END);
-	long filelen = ftell(inputfile);
-	rewind(inputfile);
-	char* buffer = (char*) malloc((filelen+1) * sizeof(char));
-	fread(buffer, filelen, 1, inputfile);
+	struct stat statbuf;
+	if(fstat(fileno(inputfile), &statbuf) < 0){
+		printf("could not open file %s!\n", argv[1]);
+		exit(2);
+	}
+	int filelen = statbuf.st_size;
+	unsigned char* buffer = mmap(NULL, filelen, PROT_READ|PROT_WRITE, MAP_PRIVATE, fileno(inputfile), 0);
+	buffer[statbuf.st_size] = 0xff;
 	fclose(inputfile);
-	buffer[filelen] = 0xff;
 	prg = buffer;
 	run(filelen);
+
+	if(munmap(buffer, statbuf.st_size)) {
+		printf("unmapping failed!\n");
+		return (1);
+	}
 	return 0;
 }
