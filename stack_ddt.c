@@ -15,19 +15,7 @@ uint32_t* locals;
 uint16_t sp;
 unsigned char* prg;
 
-// typedef void(*stdop)(void);
-// stdop ops[] = {
-// 	nop, sleep, pushi32, pushi16, iprint, fprint, ftoi, itof,
-// 	iadd, isub, imul, idiv, fadd, fsub, fmul, fdiv,
-// 	pop, swap, beq, bgt, blt, bge, ble, bne, jmp, dup, andb, orb, xorb, notb,
-// 	store, load, pushpc, writepc, pushsp, writesp, jsr, jsrs, pushab, pusha, pushaw,
-// 	sprint, lsl, lsr, mod, pushi8, neg, negf, 
-// 	c0, c1, c2, c3, c4, c5, c6, c7, malloca, freea, indexab, indexa, indexaw, storea,
-// 	store0, store1, store2, store3, store4, load0, load1, load2, load3, load4
-// };
-
-
-void run(long len) {
+void run() {
 	const static void* ops[] = {
 		&&nop, &&sleep, &&pushi32, &&pushi16, &&iprint, &&fprint, &&ftoi, &&itof,
 		&&iadd, &&isub, &&imul, &&idiv, &&fadd, &&fsub, &&fmul, &&fdiv,
@@ -316,12 +304,11 @@ int main(int argc, char* argv[]) {
 		printf("could not open file %s!\n", argv[1]);
 		exit(2);
 	}
-	int filelen = statbuf.st_size;
-	unsigned char* buffer = mmap(NULL, filelen, PROT_READ|PROT_WRITE, MAP_PRIVATE, fileno(inputfile), 0);
+	unsigned char* buffer = mmap(NULL, statbuf.st_size, PROT_READ|PROT_WRITE, MAP_PRIVATE, fileno(inputfile), 0);
 	buffer[statbuf.st_size] = 0xff;
 	fclose(inputfile);
 	prg = buffer;
-	run(filelen);
+	run();
 
 	if(munmap(buffer, statbuf.st_size)) {
 		printf("unmapping failed!\n");
