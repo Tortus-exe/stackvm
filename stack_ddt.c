@@ -407,7 +407,7 @@ int main(int argc, char* argv[]) {
 		k.isrs[i] = ((uint32_t*)buffer)[i];
 	}
 
-	uint32_t argp[2] = {(uint32_t) &k, 1};
+	uint32_t argp[2] = {(uint32_t) &k, NUM_ISRS};
 
 	pthread_t thread_id; 
 	pthread_create(&thread_id, NULL, cause_isr_wrapper, (void*) argp);

@@ -26,3 +26,13 @@ testddt: ddt
 			echo == TEST FAILED: $$i ==;\
 		fi;\
 	done
+
+testddtisr: ddt
+	for i in `ls tests_isr`;\
+		do a=`./stack tests_isr/$$i`;\
+		if [[ $$a == `cat expect_isr/$$i` ]]; then\
+			echo TEST PASSED: $$i;\
+		else\
+			echo == TEST FAILED: $$i ==;\
+		fi;\
+	done

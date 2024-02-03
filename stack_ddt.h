@@ -1,6 +1,6 @@
 #define STACK_SIZE 4096
 #define NUMLOCALS 256
-//#define NUM_ISRS 1
+#define NUM_ISRS 0
 
 typedef struct {
 	uint32_t pc;
