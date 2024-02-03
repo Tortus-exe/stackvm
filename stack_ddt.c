@@ -5,6 +5,11 @@
 #include <sys/mman.h>
 #include "stack_ddt.h"
 
+#ifdef NUM_ISRS
+#include <pthread.h>
+#include <unistd.h>
+#endif
+
 // uint32_t pc;
 // uint32_t* stack;
 // uint32_t* locals;
@@ -26,7 +31,18 @@ void run(PRG* _p) {
 
 	float res;
 
-	#define NEXT() _p->pc++; goto *ops[_p->prg[_p->pc-1]]
+	#define NEXT() goto _NEXT_INSTR__
+_NEXT_INSTR__:
+	#ifdef NUM_ISRS
+	if(_p->isrid > 0 && _p->isrid <= NUM_ISRS) {
+		_p->sp++;
+		_p->stack[_p->sp] = _p->pc;
+		_p->pc = _p->isrs[_p->isrid - 1];
+		_p->isrid = 255;
+	}
+	#endif
+	_p->pc++;
+	goto *ops[_p->prg[_p->pc-1]];
 nop:
 sleep:
 	NEXT();
@@ -145,7 +161,7 @@ jmp:
 	NEXT();
 dup: 
 	_p->sp++;
-	_p->stack[_p->sp] = _p->stack[_p->sp]; 
+	_p->stack[_p->sp] = _p->stack[_p->sp-1]; 
 	NEXT();
 
 andb: 
@@ -178,6 +194,11 @@ pushpc:
 	_p->stack[_p->sp] = _p->pc; 
 	NEXT();
 writepc: 
+	#ifdef NUM_ISRS
+	if(_p->isrid == 255) {
+		_p->isrid = 0;
+	}
+	#endif
 	_p->pc = _p->stack[_p->sp]; 
 	_p->sp--;
 	NEXT();
@@ -333,6 +354,22 @@ load4:
 	halt:
 }
 
+#ifdef NUM_ISRS
+void cause_isr(PRG* p, int i) {
+	while(p->isrid == -1);
+	p->isrid = i;
+}
+
+void* cause_isr_wrapper(void* vargp) {
+	uint32_t* args = (uint32_t*) vargp;
+	PRG* p = (PRG*) args[0];
+	int t = args[1];
+	sleep(1);
+	cause_isr(p, t);
+	return NULL;
+}
+#endif
+
 int main(int argc, char* argv[]) {
 	if(argc!=2) {
 		printf("not enough arguments! usage: \n%s [inputfile]\n", argv[0]);
@@ -353,14 +390,34 @@ int main(int argc, char* argv[]) {
 	fclose(inputfile);
 
 	PRG k = {
-		.pc = 0,
 		.stack = malloc(STACK_SIZE * sizeof(uint32_t)),
 		.locals = malloc(NUMLOCALS * sizeof(uint32_t)),
 		.sp = -1,
 		.prg = buffer,
+		#ifdef NUM_ISRS
+		.pc = sizeof(uint32_t) * NUM_ISRS,
+		.isrid = 0,
+		#else
+		.pc = 0,
+		#endif
 	};
 
+	#ifdef NUM_ISRS
+	for(int i=0;i<NUM_ISRS;++i) {
+		k.isrs[i] = ((uint32_t*)buffer)[i];
+	}
+
+	uint32_t argp[2] = {(uint32_t) &k, 1};
+
+	pthread_t thread_id; 
+	pthread_create(&thread_id, NULL, cause_isr_wrapper, (void*) argp);
+	#endif
+
 	run(&k);
+
+#ifdef NUM_ISRS
+	pthread_join(thread_id, NULL);
+#endif
 
 	if(munmap(buffer, statbuf.st_size)) {
 		printf("unmapping failed!\n");
